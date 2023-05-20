@@ -49,5 +49,24 @@ python3 manage.py runserver
 ```
 
 ### Примеры запросов
-GET api/
+GET http://127.0.0.1:8000/api/v1/groups/
+
+application/json
+[
+    {
+        "id": 0,
+        "title": "string",
+        "slug": "string",
+        "description": "string"
+    }
+]
+
+POST http://127.0.0.1:8000/api/v1/follow/
+
+application/json
+
+{
+    "following": "string"
+}
+
 
