@@ -52,6 +52,7 @@ python3 manage.py runserver
 GET http://127.0.0.1:8000/api/v1/groups/
 
 application/json
+
 [
     {
         "id": 0,
