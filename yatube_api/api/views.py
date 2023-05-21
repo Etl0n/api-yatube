@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import filters
 
-from .exceptions import PermissionDenied, FollowExit
+from .exceptions import FollowExit
 from .serializers import (
     GroupSerializer,
     FollowSerializer,
@@ -12,31 +12,27 @@ from .serializers import (
 )
 from posts.models import Group, Follow, Post, User
 from .mixins import ListCreateViewSet, RetrieveListViewSet
+from .permissions import AuthorOrReadOnly, ReadOnly
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (AuthorOrReadOnly,)
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def perform_update(self, serializer):
-        if serializer.instance.author != self.request.user:
-            raise PermissionDenied('Изменение чужого контента запрещено!')
-        serializer.save(author=self.request.user)
-
-    def perform_destroy(self, serializer):
-        if self.request.user != serializer.author:
-            raise PermissionDenied('Изменение чужого контента запрещено!')
-        serializer.delete()
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            return (ReadOnly(),)
+        return super().get_permissions()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (AuthorOrReadOnly,)
 
     def get_queryset(self):
         post = Post.objects.get(id=self.kwargs.get('post'))
@@ -47,10 +43,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         post = Post.objects.get(id=self.kwargs.get('post'))
         serializer.save(author=self.request.user, post=post)
 
-    def perform_destroy(self, serializer):
-        if self.request.user != serializer.author:
-            raise PermissionDenied('Изменение чужого контента запрещено!')
-        serializer.delete()
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            return (ReadOnly(),)
+        return super().get_permissions()
 
 
 class FollowViewSet(ListCreateViewSet):
