@@ -12,7 +12,7 @@ from .serializers import (
 )
 from posts.models import Group, Follow, Post, User
 from .mixins import ListCreateViewSet, RetrieveListViewSet
-from .permissions import AuthorOrReadOnly, ReadOnly
+from .permissions import AuthorOrReadOnly
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -23,11 +23,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (ReadOnly(),)
-        return super().get_permissions()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -42,11 +37,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         post = Post.objects.get(id=self.kwargs.get('post'))
         serializer.save(author=self.request.user, post=post)
-
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (ReadOnly(),)
-        return super().get_permissions()
 
 
 class FollowViewSet(ListCreateViewSet):
