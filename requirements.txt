@@ -5,7 +5,10 @@ certifi==2024.2.2
 charset-normalizer==2.0.12
 colorama==0.4.6
 Django==3.2
+<<<<<<< HEAD
 djoser==2.2.2
+=======
+>>>>>>> aadb74fc7034d95e9ccb4156869de54fcc2d0cf3
 django-filter==23.2
 djangorestframework==3.12.4
 djangorestframework-simplejwt==5.2.2
